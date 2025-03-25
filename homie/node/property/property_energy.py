@@ -2,7 +2,7 @@ from .property_float import Property_Float
 
 
 class Property_Energy(Property_Float):
-    """ measuring work in kW/h """
+    """ measuring energy in kWh """
 
     def __init__(
         self,
@@ -12,7 +12,7 @@ class Property_Energy(Property_Float):
         settable=False,
         retained=True,
         qos=1,
-        unit="kW/h",
+        unit="kWh",
         data_type=float,
         data_format=None,
         value=None,
