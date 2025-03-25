@@ -2,11 +2,9 @@
 
 import paho.mqtt.client as mqtt_client
 import asyncio
-import traceback
 import threading
 import functools
 
-from uuid import getnode as get_mac
 from homie.mqtt.mqtt_base import MQTT_Base
 
 import logging
@@ -24,8 +22,8 @@ COONNECTION_RESULT_CODES = {
     3: "Connection refused - server unavailable",
     4: "Connection refused - bad username or password",
     5: "Connection refused - not authorised",
+    7: "Connection closed - new client with same client id has connectect",
 }
-
 
 class PAHO_MQTT_Client(MQTT_Base):
     def __init__(self, mqtt_settings, last_will):
@@ -38,14 +36,14 @@ class PAHO_MQTT_Client(MQTT_Base):
 
         self.mqtt_transport = "tcp"
 
-        if "MQTT_TRANSPORT" in self.mqtt_settings:  
+        if "MQTT_TRANSPORT" in self.mqtt_settings:
             if (self.mqtt_settings["MQTT_TRANSPORT"] in ["tcp","websockets"]):
                 self.mqtt_transport = self.mqtt_settings["MQTT_TRANSPORT"]
             else:
                 logger.warning("MQTT transport {} not supported, falling back to TCP".format(self.mqtt_settings["MQTT_TRANSPORT"]))
-        
+
         # If Websocket path is set, assume websockets transport
-        if "MQTT_WS_PATH" in self.mqtt_settings:  
+        if "MQTT_WS_PATH" in self.mqtt_settings:
             self.mqtt_transport = "websockets"
 
         self.mqtt_client = mqtt_client.Client(
@@ -62,7 +60,7 @@ class PAHO_MQTT_Client(MQTT_Base):
 
         self.set_will(self.last_will,"lost",True,1)
 
-        if "MQTT_WS_PATH" in self.mqtt_settings:  
+        if "MQTT_WS_PATH" in self.mqtt_settings:
             self.mqtt_client.ws_set_options(path=self.mqtt_settings["MQTT_WS_PATH"])
 
         if self.mqtt_settings["MQTT_USERNAME"]:
@@ -70,7 +68,7 @@ class PAHO_MQTT_Client(MQTT_Base):
                 self.mqtt_settings["MQTT_USERNAME"],
                 password=self.mqtt_settings["MQTT_PASSWORD"],
             )
-        
+
         if self.mqtt_settings["MQTT_USE_TLS"]:
             self.mqtt_client.tls_set()
 
@@ -144,11 +142,7 @@ class PAHO_MQTT_Client(MQTT_Base):
             if rc in COONNECTION_RESULT_CODES:
                 rc_text = COONNECTION_RESULT_CODES[rc]
 
-            logger.warning(
-                "MQTT Unexpected disconnection  {} {} {}".format(
-                    client, userdata, rc_text
-                )
-            )
+            logger.warning(f"MQTT Unexpected disconnection {client=} {userdata=}, rc={rc_text}")
         MQTT_Base._on_disconnect(self, rc)
 
     def close(self):

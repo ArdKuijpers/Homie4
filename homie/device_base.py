@@ -97,7 +97,7 @@ class Device_Base(object):
 
         self.mqtt_subscription_handlers = {}
 
-        global devices 
+        global devices
         devices.append(self)
 
         #atexit.register(self.close)
@@ -120,7 +120,7 @@ class Device_Base(object):
 
         if "stats" in self.extensions:
             global repeating_timer
-            if repeating_timer == None:
+            if repeating_timer is None:
                 repeating_timer = Repeating_Timer(
                     self.homie_settings["update_interval"]
                 )
@@ -166,7 +166,7 @@ class Device_Base(object):
     def publish_extensions(self, retain=True, qos=1):
         extensions = ",".join(self.extensions)
 
-        if extensions is not "":
+        if extensions != "":
             self.publish("/".join((self.topic, "$extensions")), extensions, retain, qos)
 
         if "stats" in self.extensions:
@@ -195,7 +195,7 @@ class Device_Base(object):
 
 #    def publish_homeassistant(self,hass_config,hass_payload):
 #        self.publish(hass_config,hass_payload, True, 1)
-        
+
     def add_subscription(self,topic,handler,qos=0): #subscription list to the required MQTT topics, used by properties to catch set topics
         self.mqtt_subscription_handlers [topic] = handler
         self.mqtt_client.subscribe (topic,qos)
@@ -264,7 +264,7 @@ class Device_Base(object):
         if settings is not None:
             for setting, value in HOMIE_SETTINGS.items():
                 logger.debug("Homie settings {} {}".format(setting, value))
-                if not setting in settings:
+                if setting not in settings:
                     settings[setting] = HOMIE_SETTINGS[setting]
         else:
             settings = HOMIE_SETTINGS
@@ -309,7 +309,7 @@ class Device_Base(object):
 
 def close_devices(*arg):
     logger.info ('Closing Devices')
-    global devices 
+    global devices
     for device in devices:
         device.close()
     logger.info ('Closed Devices')

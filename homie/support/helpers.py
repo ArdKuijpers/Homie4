@@ -13,7 +13,7 @@ A topic level ID MUST NOT start or end with a hyphen (-). The special character 
 
 def validate_id(id):
     if isinstance(id, str):
-        r = re.compile("(^(?!\-)[a-z0-9\-]+(?<!\-)$)")
+        r = re.compile(r"^(?!-)[a-z0-9-]+(?<!-)$")
         return id if r.match(id) else False
 
 
