@@ -3,6 +3,7 @@ import logging
 # non std modules
 from homie.device_status import Device_Status
 from homie.node.property.property_power import Property_Power
+from homie.node.property.property_energy import Property_Energy
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class Device_EM1010(Device_Status):
 
     def update_energy(self, energy):
         logger.info("Updated Energy {} kW/h".format(energy))
-        self.work.value = work
+        self.energy.value = energy
 
     def update_total_energy(self, total_energy):
         logger.info("Updated Total Energy {} kW/h".format(total_energy))

@@ -13,8 +13,6 @@ from homie.support.network_information import Network_Information
 
 logger = logging.getLogger(__name__)
 
-
-
 class MQTT_Base(object):
     def __init__(self, mqtt_settings, last_will):
         logger.debug("MQTT client Settings {}".format(mqtt_settings))
@@ -81,7 +79,6 @@ class MQTT_Base(object):
 
         return self.mac_address, self.ip_address
 
-
     def _on_message(self, topic, payload, retain, qos):
         logger.debug(
             "MQTT On Message: Topic {}, Payload {} Reatin {} QOS {}".format(
@@ -92,8 +89,8 @@ class MQTT_Base(object):
             if device.start_time is not None:  # device is ready
                 try:
                     device.mqtt_on_message(topic, payload, retain == 1, qos)
-                except:
-                    logger.exception("on_message error")
+                except Exception as e:
+                    logger.exception(f"on_message error {e}")
 
     def _on_disconnect(self, rc):
         logger.warning("MQTT On Disconnect: Result Code {}".format(rc))

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import logging
-import netifaces
 import socket
 import uuid
 
@@ -9,23 +8,6 @@ logger = logging.getLogger(__name__)
 
 class Network_Information(object):
     """Util for getting a interface' ip to a specific host and the corresponding mac address."""
-
-    # def __init__(self):
-    #     self.ip_to_interface = self.__build_ip_to_interface_dict()
-
-    # def __build_ip_to_interface_dict(self):
-    #     """Build a map of IPv4-Address to Interface-Name (like 'eth0')"""
-    #     map = {}
-    #     for interface in netifaces.interfaces():
-    #         try:
-    #             ifInfo = netifaces.ifaddresses(interface)[netifaces.AF_INET]
-    #             for addrInfo in ifInfo:
-    #                 addr = addrInfo.get("addr")
-    #                 if addr:
-    #                     map[addr] = interface
-    #         except Exception:
-    #             pass
-    #     return map
 
     def get_local_ip(self, targetHost, targetPort):
         """Gets the local ip to reach the given ip.
@@ -36,9 +18,7 @@ class Network_Information(object):
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.connect((targetHost, targetPort))
         except Exception as e:
-            logger.exception(
-                "Cannot create socket to target " + targetHost + ":" + targetPort
-            )
+            logger.exception(f"Cannot create socket to target {targetHost}:{targetPort} to get local ip: {e}")
         else:
             ip = s.getsockname()[0]
             s.close()
